@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
-import {Provider} from 'react-redux';
+import {Provider, d} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk'
 import firebase from 'firebase';
@@ -8,26 +8,47 @@ import reducers from './reducers'
 import config from './firebase_config'
 import LoginForm from './components/LoginForm'
 import EmployeeList from './components/EmployeeList'
-import {createStackNavigator} from 'react-navigation'
+import EmployeeCreate from './components/EmployeeCreate'
+import EmployeeEdit from './components/EmployeeEdit';
+
+import AuthLoadingScreen from './components/AuthLoadingScreen'
+import {createStackNavigator, createSwitchNavigator} from 'react-navigation'
 import NavigationService from './NavigationService'
+import {checkIflLoggedInWithFirebase} from './actions'
+
 
 const store = createStore(
     reducers,
     applyMiddleware(thunk)
   );
 
-console.log(store.getState())
-const Router = createStackNavigator({
+//console.log(store.getState())
+const AuthStack = createStackNavigator({
     login: {screen: LoginForm},
-    employeeList: {screen: EmployeeList}
+})
+
+const AppStack = createStackNavigator({
+    employeeList: {screen: EmployeeList},
+    employeeEdit: {screen: EmployeeEdit},
+    employeeCreate: {screen: EmployeeCreate}
 }, {
-    initialRouteName: 'login'
+    initialRouteName: 'employeeList'
+})
+
+const Router = createSwitchNavigator({
+    AuthLoading: AuthLoadingScreen,
+    App: AppStack,
+    Auth: AuthStack,
+}, {
+    initialRouteName: 'AuthLoading'
 })
 
 class App extends Component { 
     
     componentDidMount(){
-        firebase.initializeApp(config);
+        console.warn('App Mounted, Starting Config')
+        const init = firebase.initializeApp(config)
+        store.dispatch(checkIflLoggedInWithFirebase())
     }
 
     render(){

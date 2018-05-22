@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {View, Text} from 'react-native';
 import {Card, CardSection, Input, Button, Spinner} from './common'
+import AuthLoadingScreen from './AuthLoadingScreen';
 import {connect} from 'react-redux'
 import {emailChanged, passwordChanged, loginUser, logoutUser} from '../actions'
 
@@ -13,6 +14,11 @@ class LoginForm extends Component {
         this.onLoginButtonPress = this.onLoginButtonPress.bind(this);
         this.onLogoutButtonPress = this.onLogoutButtonPress.bind(this);
     }
+
+
+    static navigationOptions = {
+        title: 'Login',
+      };
 
     onEmailChanged(text){
         // console.log(this.props.email)
@@ -54,7 +60,7 @@ class LoginForm extends Component {
     }
 
     render(){
-        // console.log(this.props.email)
+        console.log(this.props)
         return (
             <Card>
                 <CardSection>
@@ -77,6 +83,7 @@ class LoginForm extends Component {
                 {this.renderError()}
                 <CardSection>
                     {this.renderButton()}
+                    <Button onPress={() => this.props.navigation.navigate('employeeList')}>EE List</Button>
                 </CardSection>
             </Card>
         )
